@@ -1,0 +1,37 @@
+# ignorer les modeles
+*.bin
+# Ignorer les fichiers .csv
+*.csv
+*.pickle
+*.h5
+
+# Fichiers de log
+*.log
+
+# Dossier de dépendances
+/node_modules
+
+# Système d'exploitation
+.DS_Store
+Thumbs.db
+
+# IDE et éditeur
+*.swp
+*.swo
+*.swn
+*.idea/
+.vscode/
+
+# Environnement virtuel Python
+venv/
+*.pyc
+__pycache__/
+
+# Autres fichiers couramment non désirés
+*.bak
+*.tmp
+*.temp
+
+# Fichiers de build et distribution
+dist/
+build/

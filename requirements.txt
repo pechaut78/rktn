@@ -1,0 +1,13 @@
+pandas
+numpy
+scikit-learn
+keras-tuner
+opencv-python
+matplotlib
+pillow
+unidecode
+nltk
+fasttext
+translators
+tqdm
+tensorflow-text
