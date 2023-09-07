@@ -11,3 +11,5 @@ fasttext
 translators
 tqdm
 tensorflow-text
+seaborn
+spacy

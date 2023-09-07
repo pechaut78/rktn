@@ -9,6 +9,20 @@ import RktnChallenge.GPU as GPU
 from sklearn.pipeline import Pipeline
 import fasttext
 
+
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.feature_extraction.text import HashingVectorizer
+from tensorflow.keras.preprocessing.text import Tokenizer
+from tensorflow.keras.preprocessing.sequence import pad_sequences
+from sklearn.preprocessing import LabelEncoder
+
+import seaborn as sns
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.metrics import confusion_matrix
+from sklearn.metrics import f1_score
+
 class ModelTrainer:
     def __init__(self,data_file:str, imgPATH="", downloadStopWords=False):
         if downloadStopWords:
@@ -16,6 +30,7 @@ class ModelTrainer:
         self.data = pd.read_csv(data_file)        
         self.imgPATH = imgPATH
         self.custom_vectorizer = None
+        self.encoder = None
         self.tokenizer = None
         self.cat_dict = {
             '10':"Livres anciens",
@@ -65,7 +80,7 @@ class ModelTrainer:
         if(X==None):
             X = self.data
         
-        self._preprocess = Pipeline(self.preprocess_steps)
+        self._preprocess = Pipeline(self.preprocess_steps, verbose=True)
        # _preprocess.fit(X)
         Y= self._preprocess.transform(X)
         return Y
@@ -77,5 +92,111 @@ class ModelTrainer:
         
     def initGPU(self):
         GPU.setup()
+    
+    ######################################
+    # Vectorizer
+    
+    def create_vectorizer(self,name:str, X,max_features=3000,ngram_range=(1,3),num_words=None):
+        if(name=="tfidf"):
+            self.vectorizer = TfidfVectorizer(max_features = max_features, ngram_range=ngram_range)
+            self.vectorizer.fit(X)
+            self.vocab_size = len(self.vectorizer.vocabulary_)
+        if(name=="bow"):
+            self.vectorizer = CountVectorizer(max_features = max_features, ngram_range=ngram_range)
+            self.vectorizer.fit(X)
+        if(name=="hashing"):
+            self.vectorizer = HashingVectorizer(n_features = max_features, ngram_range=ngram_range)
+            self.vectorizer.fit(X)
+        if(name=="custom"):
+            self.vectorizer = self.custom_vectorizer
+        if(name=="tokenizer"):
+            self.vectorizer = Tokenizer(lower=False, filters='', split=' ',num_words=num_words)
+            self.tokenizer = self.vectorizer
+            self.tokenizer.fit_on_texts(X)
+
+            self.word2idx =  self.tokenizer.word_index
+            self.idx2word =  self.tokenizer.index_word
+            self.vocab_size = len(self.word2idx)+1     
+            
+    def avg_vector(self,text:str, vector_size):
+            v=[]
+            txt = text.split()
+            found = False
+            #pour chaque mot dans le texte
+            for mot in txt:
+                #si le mot est dans le dictionnaire
+                if mot in self.custom_vectorizer:
+                    #on ajoute le vecteur du mot
+                    v.append(self.custom_vectorizer[mot])
+                    found=True
+            #si le mot n'est pas dans le dictionnaire
+            if not found:                
+                #on ajoute un vecteur de 0
+                return np.zeros((vector_size))
+            
+            #on renvoie la moyenne des vecteurs
+            return np.mean(v,axis=0)
+    
+    
+    def vectorizer_transform(self,text):
+        if(self.vectorizer ==  self.custom_vectorizer):
+            res = []
+            vector_size = self.custom_vectorizer.vector_size
+            txt = text.values
+            #pour chaque texte
+            for i in range(0,len(txt)):
+                #on ajoute le vecteur du texte
+                res.append(self.avg_vector(text = txt[i], vector_size = vector_size))
+                
+            #on récupère un tableau de vecteurs
+            #on le transforme en dataframe dont chaque col
+            #est une composante.
+            arr= np.array(res)
+            dfs = []
+            
+            for i in range(0,len(arr)):                
+                new_row = pd.DataFrame(arr[i].reshape(1, -1))
+                dfs.append(new_row)
+            return pd.concat(dfs, ignore_index=True)
+        if(self.vectorizer ==  self.tokenizer):   
+  
+            
+            X = self.tokenizer.texts_to_sequences(text)
+            self.max_seq_length = max(len(seq) for seq in X)
+            return pad_sequences(X, maxlen=self.max_seq_length, padding='post', truncating='post')
+        
+        return self.vectorizer.transform(text).toarray() 
         
     
+    def encodeLabel(self,src:str):
+        if(self.encoder==None):
+            self.encoder =  LabelEncoder()    
+        return self.encoder.fit_transform(self.data[src])
+
+    def getLabelSize(self):
+        return len(self.encoder.classes_)
+    
+    def evaluateTestResults(self,y_true,y_pred, encoder=None):
+        
+        weighted_f1_score = f1_score(y_true, y_pred,average='weighted')
+        print("weighted F1 score:",weighted_f1_score)
+    
+        if encoder==None:
+            encoder = self.encoder
+        class_labels = encoder.classes_
+        conf_matrix = confusion_matrix(y_true, y_pred)
+
+        row_sums = conf_matrix.sum(axis=0)
+        normalized_conf_matrix = conf_matrix / row_sums[ np.newaxis,:]*100
+
+
+
+        plt.figure(figsize=(10, 10))
+        sns.heatmap(normalized_conf_matrix, annot=True, cmap='Blues',fmt='.0f',
+                    xticklabels=class_labels,
+                    yticklabels=class_labels,
+                    linewidths=1.5)
+        plt.xlabel('Prédictions')
+        plt.ylabel('Réelles')
+        plt.title('Matrice de Confusion')
+        plt.show()
