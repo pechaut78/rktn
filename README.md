@@ -1,6 +1,8 @@
 # rktn
 Rakuten Challenge
 
+NLP_PReprocess: preprocess le data.csv pour traiter le texte
+
 Final Model: utilise les embeddings de camembert-desc et camembert-desi + VIT_embeddings
 camembert description: entraine et genere les embeddings desc
 camembert descignation: entraine et genere les embeddings desi
