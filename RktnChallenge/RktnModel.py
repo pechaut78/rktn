@@ -5,7 +5,8 @@ import numpy as np
 import importlib
 
 import RktnChallenge.GPU as GPU
-
+from RktnChallenge import imgLoader
+from RktnChallenge import callBacks
 from sklearn.pipeline import Pipeline
 import fasttext
 
@@ -200,3 +201,43 @@ class ModelTrainer:
         plt.ylabel('Réelles')
         plt.title('Matrice de Confusion')
         plt.show()
+        
+        #CNN
+    def loadData(self,
+                 PATH:str,
+                 imgsize:int,
+                 batchsize:int,
+                 aumgentImages:bool,
+                 preprocessing_function=None,
+                 customized_data = False,
+                 data = None,
+                 sample_weight = [],
+                 data_test = None,
+                 data_train = None,
+                 data_val = None
+                 ):
+        if(customized_data):
+           self.data = data
+        self.dataLoader = imgLoader.Loader(PATH, self.data, imgsize,batchsize=batchsize,aumgentImages=aumgentImages,preprocessing_function=preprocessing_function,sample_weight=sample_weight,
+            data_test = data_test,
+            data_train = data_train,
+            data_val = data_val)        
+
+        
+    def train(self, model=None, X_custom=False,X = None, epochs:int=50,callbacks=[]):
+        if model is None:
+            model = self.tuned_model     
+        if(X_custom==False):
+            X=self.dataLoader.train_data
+        if(len(callbacks) == 0):
+            callbacks = callBacks.getList()   
+        return model.fit(x=X,
+                epochs=epochs, validation_data = self.dataLoader.validation_data,
+                callbacks=callbacks 
+                )
+        
+    def save(self):
+        if(self.tuned_model is not None):
+            self.tuned_model.save(self.project_name+".keras")
+        else:
+            print("No model to save")

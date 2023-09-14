@@ -4,6 +4,8 @@
 *.csv
 *.pickle
 *.h5
+*.png
+/images
 
 # Fichiers de log
 *.log

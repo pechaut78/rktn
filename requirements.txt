@@ -13,3 +13,4 @@ tqdm
 tensorflow-text
 seaborn
 spacy
+vit-transformer

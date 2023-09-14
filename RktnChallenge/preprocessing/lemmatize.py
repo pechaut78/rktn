@@ -1,6 +1,8 @@
 from sklearn.base import BaseEstimator, TransformerMixin
 import spacy
 from nltk.stem import WordNetLemmatizer
+import pandas as pd
+
 
 class lemmatize(BaseEstimator, TransformerMixin):
     
@@ -18,10 +20,13 @@ class lemmatize(BaseEstimator, TransformerMixin):
     def transform(self, X):
        
         def lemm(x) :
-            text = " ".join(x)
-            doc = self.nlp(text)
-            return [token.lemma_ for token in doc]
+            if len(x)>0: 
+                text = " ".join(x)
+                doc = self.nlp(text)
+                return [token.lemma_ for token in doc]
+            else:
+                return []
     
-        X[self.dest] = X[self.src].apply(lambda x:lemm(x))
+        X[self.dest] = X[self.src].apply(lambda x: lemm(x))
         
         return X

@@ -14,6 +14,6 @@ class removeHTML(BaseEstimator, TransformerMixin):
         if self.dest not in X.columns:
             raise ValueError(f"Columns {self.src} or {self.dest} not found in DataFrame.")
         
-        X[self.dest] = X[self.dest].apply(lambda x: "" if(pd.isna(x)) else unidecode(BeautifulSoup(x, "lxml").text))
+        X[self.dest] = X[self.dest].apply(lambda x: "" if(pd.isna(x)) else unidecode(BeautifulSoup(x, "html.parser").text))
         
         return X

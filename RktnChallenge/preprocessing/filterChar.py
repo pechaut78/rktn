@@ -1,5 +1,5 @@
 from sklearn.base import BaseEstimator, TransformerMixin
-
+import pandas as pd
 
 
 class filterChar(BaseEstimator, TransformerMixin):
@@ -22,6 +22,6 @@ class filterChar(BaseEstimator, TransformerMixin):
                 s = x.replace(char, ' ')
             return s
     
-        X[self.dest] = X[self.src].apply(lambda x: replace(x))
+        X[self.dest] = X[self.src].apply(lambda x:x if pd.isna(x) else replace(x))
         
         return X
