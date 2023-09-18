@@ -4,7 +4,7 @@ import pandas as pd
 
 class filterChar(BaseEstimator, TransformerMixin):
     
-    def __init__(self,dest:str, src:str, target:str) -> None:
+    def __init__(self,dest:str, src:str, target:[]) -> None:
         super().__init__()
         self.src = src
         self.dest = dest
@@ -18,8 +18,12 @@ class filterChar(BaseEstimator, TransformerMixin):
     def transform(self, X):
        
         def replace(x) :
+            s=x
             for char in self.target:
-                s = x.replace(char, ' ')
+                if char in s:                    
+                    s = s.replace(char, ' ')
+                
+            print(x,"-",s)
             return s
     
         X[self.dest] = X[self.src].apply(lambda x:x if pd.isna(x) else replace(x))

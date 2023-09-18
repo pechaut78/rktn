@@ -9,7 +9,7 @@ class tokenizeString(BaseEstimator, TransformerMixin):
         super().__init__()
         self.src = src
         self.dest = dest
-        self.tokenizer = nltk.RegexpTokenizer(r'\w+')
+        self.tokenizer = nltk.RegexpTokenizer(r'''\w'|\w+|[^\w\s]''')
 
     
     def transform(self, X):

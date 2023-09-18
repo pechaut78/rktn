@@ -12,7 +12,8 @@ class lemmatize(BaseEstimator, TransformerMixin):
         super().__init__()
         self.src = src
         self.dest = dest
-        self.nlp = spacy.load("fr_core_news_sm")
+        activated = spacy.prefer_gpu()
+        self.nlp = spacy.load("fr_core_news_lg")
         
         
 

@@ -13,5 +13,5 @@ class TokenListToString(BaseEstimator, TransformerMixin):
     def transform(self, X, y=None):        
         
         # Jointure des tokens pour chaque sous-liste
-        X[self.dest] = X[self.src].apply(lambda x: 
-        self.separator.join(x) )
+        X[self.dest] = X[self.src].apply(lambda x: self.separator.join(x) if x else " ")
+        

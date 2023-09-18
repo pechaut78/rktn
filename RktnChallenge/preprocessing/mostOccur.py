@@ -21,9 +21,13 @@ class mostOccur(BaseEstimator, TransformerMixin):
 
             # Calcule la fréquence de chaque mot
             word_counts = Counter(X)
+            
+            needed = size - len(X)
+            to_add = [word for word, _ in word_counts.most_common(needed)]            
+            X.extend(to_add)
+    
+            return X
 
-            # Retourne les 'y' mots les plus fréquents
-            return [word for word, _ in word_counts.most_common(size)]
         
         X[self.dest] = X[self.src].apply(lambda X: most_frequent_words( X, self.maxLen, self.size))         
         return X

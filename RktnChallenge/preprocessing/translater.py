@@ -39,7 +39,7 @@ class LanguageDetector(BaseEstimator, TransformerMixin):
             texte = texte.replace("\n", " ")            
             langue,precision=  LanguageDetector.__model_detect_lang.predict(texte)
 
-            if(precision<0.8) :
+            if(precision<0.6) :
                 lg = 'fr'
             else :
                 lg = langue[0].replace("__label__", "")
@@ -63,6 +63,7 @@ class Translator(BaseEstimator, TransformerMixin):
         self.defaultLang = defaultLang
         self.verbose = verbose
         self.source = source
+        #ts.preaccelerate_and_speedtest()
         
                 
     def setSrcDest(self, src, dest)-> None:
@@ -74,7 +75,7 @@ class Translator(BaseEstimator, TransformerMixin):
     
     
     def transform(self, X):
-        print("translating ...",self.src)
+        print("translating ... ",self.src)
         
         if self.src not in X.columns:
             raise ValueError(f"Columns {self.src} or {self.dest} not found in DataFrame.")
@@ -82,9 +83,9 @@ class Translator(BaseEstimator, TransformerMixin):
     
         for index,row in X[X[self.detected_lang]!=self.defaultLang].iterrows():    
             try:
-                translated_text= ts.translate_text(row[self.src],translator=self.source, from_language=row[self.detected_lang],to_language='fr')
+                translated_text= ts.translate_text(row[self.src],translator=self.source, from_language=row[self.detected_lang],to_language=self.defaultLang)
             except:
-                print("erreur: ", row[self.src])                
+                print("erreur: ",row[self.detected_lang]," ",row[self.src])                
                 translated_text = row[self.src]
             if(self.verbose):
                 print(translated_text)
