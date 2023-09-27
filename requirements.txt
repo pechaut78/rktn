@@ -14,3 +14,7 @@ tensorflow-text
 seaborn
 spacy
 vit-transformer
+streamlit-image-comparison
+stqdm
+streamlit-on-Hover-tabs
+streamlit-awesome-table
