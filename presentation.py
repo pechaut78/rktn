@@ -1,14 +1,19 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+import importlib
 
 
 from st_on_hover_tabs import on_hover_tabs
 import streamlit as st
 
+import streamlit_presentation
+import streamlit_presentation.analyse
+importlib.reload(streamlit_presentation.analyse)
+from streamlit_presentation.analyse import repartition_par_categorie
+from streamlit_presentation.analyse import repartition_longueur_categorie
 
-from analyse import repartition_par_categorie
-from analyse import repartition_longueur_categorie
+
 
 plt.rcParams['font.size'] = 12
 plt.rcParams['axes.labelsize'] = 10
