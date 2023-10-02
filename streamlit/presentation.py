@@ -7,8 +7,8 @@ from st_on_hover_tabs import on_hover_tabs
 import streamlit as st
 
 
-from streamlit.analyse import repartition_par_categorie
-from streamlit.analyse import repartition_longueur_categorie
+from analyse import repartition_par_categorie
+from analyse import repartition_longueur_categorie
 
 plt.rcParams['font.size'] = 12
 plt.rcParams['axes.labelsize'] = 10
