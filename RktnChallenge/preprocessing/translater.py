@@ -82,12 +82,13 @@ class Translator(BaseEstimator, TransformerMixin):
         print("translating ... ",self.src)
 
         #checking existence of source column
-        if self.dest not in X.columns:
-            raise ValueError(f"Columns {self.dest} not found in DataFrame.")
+        if self.src not in X.columns:
+            raise ValueError(f"Columns {self.src} not found in DataFrame.")
 
         X[self.dest] = np.nan
     
-        for index, row in tqdm(X[X[self.detected_lang] != self.defaultLang].iterrows()):    
+        for index, row in tqdm(X[X[self.detected_lang] != self.defaultLang].iterrows()):   
+            translated_text="" 
             try:
                 if(self.detected_lang!=None):
                     translated_text= ts.translate_text(row[self.src],translator=self.source, from_language=row[self.detected_lang],to_language=self.defaultLang)
@@ -102,7 +103,7 @@ class Translator(BaseEstimator, TransformerMixin):
                                     
                 translated_text = row[self.src]
             if(self.verbose):
-                print(translated_text)
+                print(translated_text,": ",row[self.src])
             X.loc[index, self.dest] = translated_text
         
         return X

@@ -2,7 +2,7 @@
 *.bin
 # Ignorer les fichiers .csv
 *.csv
-*.pickle
+*.pkl
 *.h5
 *.png
 /images
