@@ -1,6 +1,9 @@
 # rktn
 Rakuten Challenge 2021
 
+Le repertoire RktnChallenge contient une classe Helper qui permet de charger, traiter les données, encoder les labels et afficher la matrice de conf.
+Dans preprocessing, on trouvera le source de ce qui nous a permis de construire les pipelines de traitement.
+
 ## Preprocessing
 Code pour le preprocess
 ```
